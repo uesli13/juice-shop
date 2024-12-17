@@ -39,26 +39,6 @@ async function create4Products() {
 describe('configValidation', () => {
   describe('checkUnambiguousMandatorySpecialProducts', () => {
     it('should accept a valid config', () => {
-      /*const products = [
-        {
-          name: 'Apple Juice',
-          useForChristmasSpecialChallenge: true
-        },
-        {
-          name: 'Orange Juice',
-          urlForProductTamperingChallenge: 'foobar'
-        },
-        {
-          name: 'Melon Juice',
-          fileForRetrieveBlueprintChallenge: 'foobar',
-          exifForBlueprintChallenge: ['OpenSCAD']
-        },
-        {
-          name: 'Rippertuer Special Juice',
-          keywordsForPastebinDataLeakChallenge: ['bla', 'blubb']
-        }
-      ]*/
-
       expect(checkUnambiguousMandatorySpecialProducts(create4Products())).to.equal(true)
     })
 
@@ -104,26 +84,6 @@ describe('configValidation', () => {
 
   describe('checkNecessaryExtraKeysOnSpecialProducts', () => {
     it('should accept a valid config', () => {
-      /*const products = [
-        {
-          name: 'Apple Juice',
-          useForChristmasSpecialChallenge: true
-        },
-        {
-          name: 'Orange Juice',
-          urlForProductTamperingChallenge: 'foobar'
-        },
-        {
-          name: 'Melon Juice',
-          fileForRetrieveBlueprintChallenge: 'foobar',
-          exifForBlueprintChallenge: ['OpenSCAD']
-        },
-        {
-          name: 'Rippertuer Special Juice',
-          keywordsForPastebinDataLeakChallenge: ['bla', 'blubb']
-        }
-      ]*/
-
       expect(checkNecessaryExtraKeysOnSpecialProducts(create4Products())).to.equal(true)
     })
 
@@ -153,26 +113,6 @@ describe('configValidation', () => {
 
   describe('checkUniqueSpecialOnProducts', () => {
     it('should accept a valid config', () => {
-      /*const products = [
-        {
-          name: 'Apple Juice',
-          useForChristmasSpecialChallenge: true
-        },
-        {
-          name: 'Orange Juice',
-          urlForProductTamperingChallenge: 'foobar'
-        },
-        {
-          name: 'Melon Juice',
-          fileForRetrieveBlueprintChallenge: 'foobar',
-          exifForBlueprintChallenge: ['OpenSCAD']
-        },
-        {
-          name: 'Rippertuer Special Juice',
-          keywordsForPastebinDataLeakChallenge: ['bla', 'blubb']
-        }
-      ]*/
-
       expect(checkUniqueSpecialOnProducts(create4Products())).to.equal(true)
     })
 
