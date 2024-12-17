@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
@@ -12,24 +12,27 @@ const jsonHeader = { 'content-type': 'application/json' }
 const REST_URL = 'http://localhost:3000/rest'
 const URL = 'http://localhost:3000'
 
+// Helper function to perform login and return a token
+function loginAndGetToken(email: string, password: string) {
+  return frisby.post(`${REST_URL}/user/login`, {
+    headers: jsonHeader,
+    body: { email, password }
+  })
+    .expect('status', 200)
+    .then(({ json }) => json.authentication.token)
+}
+
 describe('/profile/image/file', () => {
   it('POST profile image file valid for JPG format', () => {
     const file = path.resolve(__dirname, '../files/validProfileImage.jpg')
     const form = frisby.formData()
     form.append('file', fs.createReadStream(file))
 
-    return frisby.post(`${REST_URL}/user/login`, {
-      headers: jsonHeader,
-      body: {
-        email: `jim@${config.get<string>('application.domain')}`,
-        password: 'ncc-1701'
-      }
-    })
-      .expect('status', 200)
-      .then(({ json: jsonLogin }) => {
+    return loginAndGetToken(`jim@${config.get<string>('application.domain')}`, 'ncc-1701')
+      .then(token => {
         return frisby.post(`${URL}/profile/image/file`, {
           headers: {
-            Cookie: `token=${jsonLogin.authentication.token}`,
+            Cookie: `token=${token}`,
             // @ts-expect-error FIXME form.getHeaders() is not found
             'Content-Type': form.getHeaders()['content-type']
           },
@@ -45,18 +48,11 @@ describe('/profile/image/file', () => {
     const form = frisby.formData()
     form.append('file', fs.createReadStream(file))
 
-    return frisby.post(`${REST_URL}/user/login`, {
-      headers: jsonHeader,
-      body: {
-        email: `jim@${config.get<string>('application.domain')}`,
-        password: 'ncc-1701'
-      }
-    })
-      .expect('status', 200)
-      .then(({ json: jsonLogin }) => {
+    return loginAndGetToken(`jim@${config.get<string>('application.domain')}`, 'ncc-1701')
+      .then(token => {
         return frisby.post(`${URL}/profile/image/file`, {
           headers: {
-            Cookie: `token=${jsonLogin.authentication.token}`,
+            Cookie: `token=${token}`,
             // @ts-expect-error FIXME form.getHeaders() is not found
             'Content-Type': form.getHeaders()['content-type']
           },
@@ -90,18 +86,11 @@ describe('/profile/image/url', () => {
     const form = frisby.formData()
     form.append('imageUrl', 'https://placekitten.com/g/100/100')
 
-    return frisby.post(`${REST_URL}/user/login`, {
-      headers: jsonHeader,
-      body: {
-        email: `jim@${config.get<string>('application.domain')}`,
-        password: 'ncc-1701'
-      }
-    })
-      .expect('status', 200)
-      .then(({ json: jsonLogin }) => {
+    return loginAndGetToken(`jim@${config.get<string>('application.domain')}`, 'ncc-1701')
+      .then(token => {
         return frisby.post(`${URL}/profile/image/url`, {
           headers: {
-            Cookie: `token=${jsonLogin.authentication.token}`,
+            Cookie: `token=${token}`,
             // @ts-expect-error FIXME form.getHeaders() is not found
             'Content-Type': form.getHeaders()['content-type']
           },
@@ -116,18 +105,11 @@ describe('/profile/image/url', () => {
     const form = frisby.formData()
     form.append('imageUrl', 'https://notanimage.here/100/100')
 
-    return frisby.post(`${REST_URL}/user/login`, {
-      headers: jsonHeader,
-      body: {
-        email: `jim@${config.get<string>('application.domain')}`,
-        password: 'ncc-1701'
-      }
-    })
-      .expect('status', 200)
-      .then(({ json: jsonLogin }) => {
+    return loginAndGetToken(`jim@${config.get<string>('application.domain')}`, 'ncc-1701')
+      .then(token => {
         return frisby.post(`${URL}/profile/image/url`, {
           headers: {
-            Cookie: `token=${jsonLogin.authentication.token}`,
+            Cookie: `token=${token}`,
             // @ts-expect-error FIXME form.getHeaders() is not found
             'Content-Type': form.getHeaders()['content-type']
           },
