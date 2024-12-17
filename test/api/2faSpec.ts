@@ -262,26 +262,6 @@ describe('/rest/2fa/setup', () => {
     const code = '200'
     await fff({ email, password, secret, token, aaa, code})
     
-/*  
-    // @ts-expect-error FIXME promise return handling broken
-    await frisby.post(
-      REST_URL + '/2fa/setup',
-      {
-        headers: {
-          Authorization: 'Bearer ' + token,
-          'content-type': 'application/json'
-        },
-        body: {
-          password,
-          setupToken: security.authorize({
-            secret,
-            type: 'totp_setup_secret'
-          }),
-          initialToken: otplib.authenticator.generate(secret)
-        }
-      })
-      .expect('status', 200)
-*/
     // @ts-expect-error FIXME promise return handling broken
     await frisby.get(
       REST_URL + '/2fa/status',
@@ -341,24 +321,6 @@ describe('/rest/2fa/setup', () => {
     const code = '401'
     await fff({ email, password, secret, token, aaa, code})
 
-/*await frisby.post(
-      REST_URL + '/2fa/setup',
-      {
-        headers: {
-          Authorization: 'Bearer ' + token,
-          'content-type': 'application/json'
-        },
-        body: {
-          password,
-          setupToken: security.authorize({
-            secret,
-            type: 'totp_setup_secret'
-          }),
-          initialToken: otplib.authenticator.generate(secret + 'ASJDVASGDKASVDUAGS')
-        }
-      })
-      .expect('status', 401)
-*/
   })
 
   it('POST should fail if the token is of the wrong type', async () => {
@@ -373,26 +335,6 @@ describe('/rest/2fa/setup', () => {
     const code = '401'
     await fff({ email, password, secret, token, aaa, code})
 
-
-/*   // @ts-expect-error FIXME promise return handling broken
-    await frisby.post(
-      REST_URL + '/2fa/setup',
-      {
-        headers: {
-          Authorization: 'Bearer ' + token,
-          'content-type': 'application/json'
-        },
-        body: {
-          password,
-          setupToken: security.authorize({
-            secret,
-            type: 'totp_setup_secret_foobar'
-          }),
-          initialToken: otplib.authenticator.generate(secret)
-        }
-      })
-      .expect('status', 401)
-*/
   })
 
   it('POST should fail if the account has already set up 2fa', async () => {
