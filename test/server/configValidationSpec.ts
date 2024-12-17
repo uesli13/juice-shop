@@ -12,10 +12,34 @@ chai.use(sinonChai)
 
 const { checkUnambiguousMandatorySpecialProducts, checkUniqueSpecialOnProducts, checkYamlSchema, checkMinimumRequiredNumberOfProducts, checkUnambiguousMandatorySpecialMemories, checkMinimumRequiredNumberOfMemories, checkUniqueSpecialOnMemories, checkSpecialMemoriesHaveNoUserAssociated, checkNecessaryExtraKeysOnSpecialProducts } = require('../../lib/startup/validateConfig')
 
+
+async function create4Products() {
+  const products = [
+    {
+      name: 'Apple Juice',
+      useForChristmasSpecialChallenge: true
+    },
+    {
+      name: 'Orange Juice',
+      urlForProductTamperingChallenge: 'foobar'
+    },
+    {
+      name: 'Melon Juice',
+      fileForRetrieveBlueprintChallenge: 'foobar',
+      exifForBlueprintChallenge: ['OpenSCAD']
+    },
+    {
+      name: 'Rippertuer Special Juice',
+      keywordsForPastebinDataLeakChallenge: ['bla', 'blubb']
+    }
+  ]
+  return products
+}
+
 describe('configValidation', () => {
   describe('checkUnambiguousMandatorySpecialProducts', () => {
     it('should accept a valid config', () => {
-      const products = [
+      /*const products = [
         {
           name: 'Apple Juice',
           useForChristmasSpecialChallenge: true
@@ -33,9 +57,9 @@ describe('configValidation', () => {
           name: 'Rippertuer Special Juice',
           keywordsForPastebinDataLeakChallenge: ['bla', 'blubb']
         }
-      ]
+      ]*/
 
-      expect(checkUnambiguousMandatorySpecialProducts(products)).to.equal(true)
+      expect(checkUnambiguousMandatorySpecialProducts(create4Products())).to.equal(true)
     })
 
     it('should fail if multiple products are configured for the same challenge', () => {
@@ -80,7 +104,7 @@ describe('configValidation', () => {
 
   describe('checkNecessaryExtraKeysOnSpecialProducts', () => {
     it('should accept a valid config', () => {
-      const products = [
+      /*const products = [
         {
           name: 'Apple Juice',
           useForChristmasSpecialChallenge: true
@@ -98,9 +122,9 @@ describe('configValidation', () => {
           name: 'Rippertuer Special Juice',
           keywordsForPastebinDataLeakChallenge: ['bla', 'blubb']
         }
-      ]
+      ]*/
 
-      expect(checkNecessaryExtraKeysOnSpecialProducts(products)).to.equal(true)
+      expect(checkNecessaryExtraKeysOnSpecialProducts(create4Products())).to.equal(true)
     })
 
     it('should fail if product has no exifForBlueprintChallenge', () => {
@@ -129,7 +153,7 @@ describe('configValidation', () => {
 
   describe('checkUniqueSpecialOnProducts', () => {
     it('should accept a valid config', () => {
-      const products = [
+      /*const products = [
         {
           name: 'Apple Juice',
           useForChristmasSpecialChallenge: true
@@ -147,9 +171,9 @@ describe('configValidation', () => {
           name: 'Rippertuer Special Juice',
           keywordsForPastebinDataLeakChallenge: ['bla', 'blubb']
         }
-      ]
+      ]*/
 
-      expect(checkUniqueSpecialOnProducts(products)).to.equal(true)
+      expect(checkUniqueSpecialOnProducts(create4Products())).to.equal(true)
     })
 
     it('should fail if a product is configured for multiple challenges', () => {
