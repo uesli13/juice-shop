@@ -11,7 +11,7 @@ module.exports = function getLanguageList () { // TODO Refactor and extend to al
   return (req: Request, res: Response, next: NextFunction) => {
     const languages: Array<{ key: string, lang: any, icons: string[], shortKey: string, percentage: unknown, gauge: string }> = []
     let count = 0
-    let enContent: any
+    let enContent: Record<string, unknown>
 
     fs.readFile('frontend/dist/frontend/assets/i18n/en.json', 'utf-8', (err, content) => {
       if (err != null) {
@@ -28,11 +28,11 @@ module.exports = function getLanguageList () { // TODO Refactor and extend to al
             if (err != null) {
               next(new Error(`Unable to retrieve ${fileName} language file: ${err.message}`))
             }
-            const fileContent = JSON.parse(content)
+            const fileContent: Record<string, unknown> = JSON.parse(content)
             const percentage = await calcPercentage(fileContent, enContent)
             const key = fileName.substring(0, fileName.indexOf('.'))
             const locale = locales.find((l) => l.key === key)
-            const lang: any = {
+            const lang = {
               key,
               lang: fileContent.LANGUAGE,
               icons: locale?.icons,
@@ -54,7 +54,7 @@ module.exports = function getLanguageList () { // TODO Refactor and extend to al
       })
     })
 
-    async function calcPercentage (fileContent: any, enContent: any): Promise<number> {
+    async function calcPercentage (fileContent: Record<string, unknown>, enContent: Record<string, unknown>): Promise<number> {
       const totalStrings = Object.keys(enContent).length
       let differentStrings = 0
       return await new Promise((resolve, reject) => {

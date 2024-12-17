@@ -18,7 +18,7 @@ const globalWithSocketIO = global as typeof globalThis & {
   io: SocketIOClientStatic & Server
 }
 
-export const solveIf = function (challenge: any, criteria: () => any, isRestore: boolean = false) {
+export const solveIf = function (challenge: any, criteria: () => boolean, isRestore: boolean = false) {
   if (notSolved(challenge) && criteria()) {
     solve(challenge, isRestore)
   }
@@ -40,7 +40,7 @@ export const solve = function (challenge: any, isRestore = false) {
   })
 }
 
-export const sendNotification = function (challenge: { difficulty?: number, key: any, name: any, description?: any }, isRestore: boolean) {
+export const sendNotification = function (challenge: { difficulty?: number, key: string, name: string, description?: string }, isRestore: boolean) {
   if (!notSolved(challenge)) {
     const flag = utils.ctfFlag(challenge.name)
     const notification = {

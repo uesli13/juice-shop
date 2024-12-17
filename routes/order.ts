@@ -68,8 +68,8 @@ module.exports = function placeOrder () {
           basket.Products?.forEach(({ BasketItem, price, deluxePrice, name, id }) => {
             if (BasketItem != null) {
               challengeUtils.solveIf(challenges.christmasSpecialChallenge, () => { return BasketItem.ProductId === products.christmasSpecial.id })
-              QuantityModel.findOne({ where: { ProductId: BasketItem.ProductId } }).then((product: any) => {
-                const newQuantity = product.quantity - BasketItem.quantity
+              QuantityModel.findOne({ where: { ProductId: BasketItem.ProductId } }).then((product: QuantityModel | null) => {
+                const newQuantity = product ? product.quantity - BasketItem.quantity : 0
                 QuantityModel.update({ quantity: newQuantity }, { where: { ProductId: BasketItem?.ProductId } }).catch((error: unknown) => {
                   next(error)
                 })

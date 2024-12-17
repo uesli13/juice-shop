@@ -34,7 +34,7 @@ function handleZipFileUpload ({ file }: Request, res: Response, next: NextFuncti
           fs.close(fd, function () {
             fs.createReadStream(tempFile)
               .pipe(unzipper.Parse())
-              .on('entry', function (entry: any) {
+              .on('entry', function (entry: unzipper.Entry) {
                 const fileName = entry.path
                 const absolutePath = path.resolve('uploads/complaints/' + fileName)
                 challengeUtils.solveIf(challenges.fileWriteChallenge, () => { return absolutePath === path.resolve('ftp/legal.md') })
@@ -82,7 +82,7 @@ function handleXmlUpload ({ file }: Request, res: Response, next: NextFunction) 
         challengeUtils.solveIf(challenges.xxeFileDisclosureChallenge, () => { return (utils.matchesEtcPasswdFile(xmlString) || utils.matchesSystemIniFile(xmlString)) })
         res.status(410)
         next(new Error('B2B customer complaints via file upload have been deprecated for security reasons: ' + utils.trunc(xmlString, 400) + ' (' + file.originalname + ')'))
-      } catch (err: any) { // TODO: Remove any
+      } catch (err: unknown) { // TODO: Remove any
         if (utils.contains(err.message, 'Script execution timed out')) {
           if (challengeUtils.notSolved(challenges.xxeDosChallenge)) {
             challengeUtils.solve(challenges.xxeDosChallenge)
