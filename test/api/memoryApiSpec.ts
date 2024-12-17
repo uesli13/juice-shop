@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
@@ -12,6 +12,31 @@ const fs = require('fs')
 const jsonHeader = { 'content-type': 'application/json' }
 const REST_URL = 'http://localhost:3000/rest'
 
+// Helper function for user login
+function loginUser(email: string, password: string) {
+  return frisby.post(REST_URL + '/user/login', {
+    headers: jsonHeader,
+    body: { email, password }
+  }).expect('status', 200)
+}
+
+// Helper function to post a memory
+function postMemory(token: string, filePath: string, caption: string, expectedStatus: number) {
+  const file = path.resolve(__dirname, filePath)
+  const form = frisby.formData()
+  form.append('image', fs.createReadStream(file), caption)
+  form.append('caption', caption)
+
+  return frisby.post(REST_URL + '/memories', {
+    headers: {
+      Authorization: 'Bearer ' + token,
+      // @ts-expect-error FIXME form.getHeaders() is not found
+      'Content-Type': form.getHeaders()['content-type']
+    },
+    body: form
+  }).expect('status', expectedStatus)
+}
+
 describe('/rest/memories', () => {
   it('GET memories via public API', () => {
     return frisby.get(REST_URL + '/memories')
@@ -19,19 +44,11 @@ describe('/rest/memories', () => {
   })
 
   it('GET memories via a valid authorization token', () => {
-    return frisby.post(REST_URL + '/user/login', {
-      headers: jsonHeader,
-      body: {
-        email: 'jim@' + config.get<string>('application.domain'),
-        password: 'ncc-1701'
-      }
-    })
-      .expect('status', 200)
+    return loginUser('jim@' + config.get<string>('application.domain'), 'ncc-1701')
       .then(({ json: jsonLogin }) => {
         return frisby.get(REST_URL + '/memories', {
           headers: { Authorization: 'Bearer ' + jsonLogin.authentication.token, 'content-type': 'application/json' }
-        })
-          .expect('status', 200)
+        }).expect('status', 200)
       })
   })
 
@@ -47,65 +64,33 @@ describe('/rest/memories', () => {
         'Content-Type': form.getHeaders()['content-type']
       },
       body: form
-    })
-      .expect('status', 401)
+    }).expect('status', 401)
   })
 
   it('POST new memory image file invalid type', () => {
-    const file = path.resolve(__dirname, '../files/invalidProfileImageType.docx')
-    const form = frisby.formData()
-    form.append('image', fs.createReadStream(file), 'Valid Image')
-    form.append('caption', 'Valid Image')
-
-    return frisby.post(REST_URL + '/user/login', {
-      headers: jsonHeader,
-      body: {
-        email: 'jim@' + config.get<string>('application.domain'),
-        password: 'ncc-1701'
-      }
-    })
-      .expect('status', 200)
+    return loginUser('jim@' + config.get<string>('application.domain'), 'ncc-1701')
       .then(({ json: jsonLogin }) => {
-        return frisby.post(REST_URL + '/memories', {
-          headers: {
-            Authorization: 'Bearer ' + jsonLogin.authentication.token,
-            // @ts-expect-error FIXME form.getHeaders() is not found
-            'Content-Type': form.getHeaders()['content-type']
-          },
-          body: form
-        })
-          .expect('status', 500)
+        return postMemory(
+          jsonLogin.authentication.token,
+          '../files/invalidProfileImageType.docx',
+          'Invalid Image',
+          500
+        )
       })
   })
 
-  it('POST new memory with valid for JPG format image', () => {
-    const file = path.resolve(__dirname, '../files/validProfileImage.jpg')
-    const form = frisby.formData()
-    form.append('image', fs.createReadStream(file), 'Valid Image')
-    form.append('caption', 'Valid Image')
-
-    return frisby.post(REST_URL + '/user/login', {
-      headers: jsonHeader,
-      body: {
-        email: 'jim@' + config.get<string>('application.domain'),
-        password: 'ncc-1701'
-      }
-    })
-      .expect('status', 200)
+  it('POST new memory with valid JPG format image', () => {
+    return loginUser('jim@' + config.get<string>('application.domain'), 'ncc-1701')
       .then(({ json: jsonLogin }) => {
-        return frisby.post(REST_URL + '/memories', {
-          headers: {
-            Authorization: 'Bearer ' + jsonLogin.authentication.token,
-            // @ts-expect-error FIXME form.getHeaders() is not found
-            'Content-Type': form.getHeaders()['content-type']
-          },
-          body: form
+        return postMemory(
+          jsonLogin.authentication.token,
+          '../files/validProfileImage.jpg',
+          'Valid Image',
+          200
+        ).then(({ json }) => {
+          expect(json.data.caption).toBe('Valid Image')
+          expect(json.data.UserId).toBe(2)
         })
-          .expect('status', 200)
-          .then(({ json }) => {
-            expect(json.data.caption).toBe('Valid Image')
-            expect(json.data.UserId).toBe(2)
-          })
       })
   })
 
