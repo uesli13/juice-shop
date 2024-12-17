@@ -8,7 +8,7 @@ import logger from '../logger'
 import colors from 'colors/safe'
 import * as utils from '../utils'
 
-export default function validateChatBot (trainingData: any, exitOnFailure = true) {
+export default function validateChatBot (trainingData: { data: { intent: string; answers: { action: string; handler: string }[] }[] }, exitOnFailure = true) {
   let success = true
   success = checkIntentWithFunctionHandlerExists(trainingData, 'queries.couponCode', 'couponCode') && success
   success = checkIntentWithFunctionHandlerExists(trainingData, 'queries.productPrice', 'productPrice') && success
@@ -26,7 +26,7 @@ export default function validateChatBot (trainingData: any, exitOnFailure = true
   return success
 }
 
-export const checkIntentWithFunctionHandlerExists = (trainingData: any, intent: string, handler: string) => {
+export const checkIntentWithFunctionHandlerExists = (trainingData: { data: { intent: string; answers: { action: string; handler: string }[] }[] }, intent: string, handler: string) => {
   let success = true
   const intentData = trainingData.data.filter((data: any) => data.intent === intent)
   if (intentData.length === 0) {

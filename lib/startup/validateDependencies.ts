@@ -11,7 +11,7 @@ import dependencyChecker from 'check-dependencies'
 
 const validateDependencies = async ({ packageDir = '.', exitOnFailure = true } = {}) => {
   let success = true
-  let dependencies: any = {}
+  let dependencies: { depsWereOk?: boolean; error?: string[] } = {}
   try {
     dependencies = await dependencyChecker({ packageDir, scopeList: ['dependencies'] })
   } catch (err) {
@@ -23,7 +23,7 @@ const validateDependencies = async ({ packageDir = '.', exitOnFailure = true } =
   } else {
     logger.warn(`Dependencies in ${colors.bold(packageDir + '/package.json')} are not rightly satisfied (${colors.red('NOT OK')})`)
     success = false
-    for (const err of dependencies.error) {
+    for (const err of dependencies.error || []) {
       logger.warn(err)
     }
   }

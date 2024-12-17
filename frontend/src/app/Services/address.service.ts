@@ -18,24 +18,24 @@ export class AddressService {
   constructor (private readonly http: HttpClient) { }
 
   get () {
-    return this.http.get(this.host).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
+    return this.http.get(this.host).pipe(map((response: { data: any }) => response.data), catchError((err) => { throw err }))
   }
 
-  getById (id) {
+  getById (id: string) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    return this.http.get(`${this.host}/${id}`).pipe(map((response: any) => response.data), catchError((err: Error) => { throw err }))
+    return this.http.get(`${this.host}/${id}`).pipe(map((response: { data: any }) => response.data), catchError((err: Error) => { throw err }))
   }
 
-  save (params) {
-    return this.http.post(this.host + '/', params).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
+  save (params: any) {
+    return this.http.post(this.host + '/', params).pipe(map((response: { data: any }) => response.data), catchError((err) => { throw err }))
   }
 
-  put (id, params) {
+  put (id: string, params: any) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    return this.http.put(`${this.host}/${id}`, params).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
+    return this.http.put(`${this.host}/${id}`, params).pipe(map((response: { data: any }) => response.data), catchError((err) => { throw err }))
   }
 
   del (id: number) {
-    return this.http.delete(`${this.host}/${id}`).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
+    return this.http.delete(`${this.host}/${id}`).pipe(map((response: { data: any }) => response.data), catchError((err) => { throw err }))
   }
 }

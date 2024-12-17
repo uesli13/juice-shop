@@ -15,7 +15,7 @@ export default defineConfig({
     fixturesFolder: false,
     supportFile: 'test/cypress/support/e2e.ts',
     setupNodeEvents (on: Cypress.PluginEvents) {
-      on('before:browser:launch', (browser: Cypress.Browser, launchOptions: Cypress.BrowserLaunchOptions) => { // TODO Remove after upgrade to Cypress >=12.5.0 <or> Chrome 119 become available on GitHub Workflows, see https://github.com/cypress-io/cypress-documentation/issues/5479
+      on('before:browser:launch', (browser: Cypress.Browser, launchOptions: Cypress.BeforeBrowserLaunchOptions) => { // TODO Remove after upgrade to Cypress >=12.5.0 <or> Chrome 119 become available on GitHub Workflows, see https://github.com/cypress-io/cypress-documentation/issues/5479
         if (browser.name === 'chrome' && browser.isHeadless) {
           launchOptions.args = launchOptions.args.map((arg: string) => {
             if (arg === '--headless') {

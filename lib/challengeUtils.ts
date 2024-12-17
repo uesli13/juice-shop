@@ -46,7 +46,7 @@ export const sendNotification = function (challenge: { difficulty?: number, key:
     const notification = {
       key: challenge.key,
       name: challenge.name,
-      challenge: challenge.name + ' (' + entities.decode(sanitizeHtml(challenge.description, { allowedTags: [], allowedAttributes: {} })) + ')',
+      challenge: challenge.name + ' (' + entities.decode(sanitizeHtml(challenge.description || '', { allowedTags: [], allowedAttributes: {} })) + ')',
       flag,
       hidden: !config.get('challenges.showSolvedNotifications'),
       isRestore

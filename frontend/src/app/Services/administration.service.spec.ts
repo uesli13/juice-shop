@@ -22,8 +22,8 @@ describe('AdministrationService', () => {
 
   it('should get application version directly from the rest api', inject([AdministrationService, HttpTestingController],
     fakeAsync((service: AdministrationService, httpMock: HttpTestingController) => {
-      let res: any
-      service.getApplicationVersion().subscribe((data) => (res = data))
+      let res: string | undefined
+      service.getApplicationVersion().subscribe((data: string) => (res = data))
       const req = httpMock.expectOne('http://localhost:3000/rest/admin/application-version')
       req.flush({ version: 'apiResponse' })
       tick()
