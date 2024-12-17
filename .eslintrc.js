@@ -5,6 +5,7 @@
 
 module.exports = {
   extends: 'standard-with-typescript',
+  root : true,
   env: {
     browser: true,
     node: true,
@@ -18,7 +19,8 @@ module.exports = {
   },
   parserOptions: {
     ecmaVersion: 2018,
-    project: './tsconfig.json'
+    project: './src/tsconfig.*.json',
+    sourceType: 'module'
   },
   ignorePatterns: [
     '.eslintrc.js',
@@ -36,7 +38,16 @@ module.exports = {
         // FIXME warnings below this line need to be checked and fixed.
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/strict-boolean-expressions': 'off',
-        '@typescript-eslint/no-var-requires': 'off'
+        '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/prefer-nullish-coalescing': 'off', // requires the `strictNullChecks` compiler option
+        '@typescript-eslint/no-explicit-any': 'error', // disallow usage of the `any` type
+        // FIXME warnings below this line need to be checked and fixed.
+        '@typescript-eslint/strict-boolean-expressions': 'off',
+        '@typescript-eslint/consistent-type-assertions': 'off',
+        '@typescript-eslint/no-floating-promises': 'off',
+        '@typescript-eslint/explicit-function-return-type': 'off',
+        '@typescript-eslint/restrict-template-expressions': 'off',
+        '@typescript-eslint/no-confusing-void-expression': 'off',
       }
     }
   ]
