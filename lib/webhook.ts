@@ -15,7 +15,7 @@ import { totalCheatScore } from './antiCheat'
 // force type of post as promisify doesn't know which one it should take
 const post = promisify(request.post as ((uri: string, options?: CoreOptions, callback?: RequestCallback) => Request))
 
-export const notify = async (challenge: { key: any, name: any }, cheatScore = -1, webhook = process.env.SOLUTIONS_WEBHOOK) => {
+export const notify = async (challenge: { key: string, name: string }, cheatScore = -1, webhook = process.env.SOLUTIONS_WEBHOOK) => {
   if (!webhook) {
     return
   }

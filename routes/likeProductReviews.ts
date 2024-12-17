@@ -42,7 +42,7 @@ module.exports = function productReviews () {
                     { _id: id },
                     { $set: { likedBy } }
                   ).then(
-                    (result: any) => {
+                    (result: unknown) => {
                       res.json(result)
                     }, (err: unknown) => {
                       res.status(500).json(err)

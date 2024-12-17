@@ -10,8 +10,8 @@ interface ExtendedValidationOptions extends ValidationOptions {
 
 interface ExtendedModel extends Model {
   _changed: Iterable<string> | ArrayLike<string>
-  rawAttributes: Record<string, any>
-  _previousDataValues: Record<string, null>
+  rawAttributes: Record<string, unknown>
+  _previousDataValues: Record<string, unknown>
 }
 
 export const makeKeyNonUpdatable = (model: Model, column: string) => {
@@ -20,7 +20,7 @@ export const makeKeyNonUpdatable = (model: Model, column: string) => {
 
     if (instance.isNewRecord) return
 
-    const changedKeys: unknown[] = []
+    const changedKeys: string[] = []
 
     const instanceChanged = Array.from(instance._changed)
 
@@ -30,7 +30,7 @@ export const makeKeyNonUpdatable = (model: Model, column: string) => {
 
     const validationErrors: ValidationErrorItemType[] = []
 
-    changedKeys.forEach((fieldName: any) => {
+    changedKeys.forEach((fieldName: string) => {
       const fieldDefinition = instance.rawAttributes[fieldName]
 
       if (

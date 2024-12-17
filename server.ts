@@ -232,12 +232,11 @@ restoreOverwrittenFilesWithOriginals().then(() => {
   /* Create middleware to change paths from the serve-index plugin from absolute to relative */
   const serveIndexMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const origEnd = res.end
-    // @ts-expect-error FIXME assignment broken due to seemingly void return value
-    res.end = function () {
-      if (arguments.length) {
+    res.end = function (chunk: string) {
+      if (chunk) {
         const reqPath = req.originalUrl.replace(/\?.*$/, '')
         const currentFolder = reqPath.split('/').pop() as string
-        arguments[0] = arguments[0].replace(/a href="([^"]+?)"/gi, function (matchString: string, matchedUrl: string) {
+        chunk = chunk.replace(/a href="([^"]+?)"/gi, function (matchString: string, matchedUrl: string) {
           let relativePath = path.relative(reqPath, matchedUrl)
           if (relativePath === '') {
             relativePath = currentFolder
@@ -249,8 +248,7 @@ restoreOverwrittenFilesWithOriginals().then(() => {
           return 'a href="' + relativePath + '"'
         })
       }
-      // @ts-expect-error FIXME passed argument has wrong type
-      origEnd.apply(this, arguments)
+      origEnd.apply(this, arguments as unknown as [string])
     }
     next()
   }

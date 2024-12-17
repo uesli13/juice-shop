@@ -92,7 +92,7 @@ export const authenticatedUsers: IAuthenticatedUsers = {
   }
 }
 
-export const userEmailFrom = ({ headers }: any) => {
+export const userEmailFrom = ({ headers }: { headers: Record<string, string> }) => {
   return headers ? headers['x-user-email'] : undefined
 }
 
