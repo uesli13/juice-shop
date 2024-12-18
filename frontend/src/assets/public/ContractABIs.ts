@@ -112,10 +112,7 @@ export const nftABI = [
   },
 ];
 
-// Reusing ERC20_ABI for both BeeToken and Contract
-export const contractABI = ERC20_ABI;
-export const BeeTokenABI = ERC20_ABI;
-
+// Bee Faucet ABI
 export const BeeFaucetABI = [
   {
     inputs: [],
@@ -170,6 +167,8 @@ export const BeeFaucetABI = [
     type: 'function',
   },
 ];
+
+// Web3 Wallet ABI
 export const web3WalletABI = [
   {
     anonymous: false,
@@ -272,3 +271,7 @@ export const web3WalletABI = [
     type: 'receive',
   },
 ];
+
+// Reusing ERC20_ABI for both BeeToken and Contract
+export const contractABI = ERC20_ABI;
+export const BeeTokenABI = ERC20_ABI;
