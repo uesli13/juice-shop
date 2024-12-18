@@ -19,7 +19,7 @@ export class ChallengeService {
   constructor (private readonly http: HttpClient) { }
 
   find (params?: any): Observable<Challenge[]> {
-    return this.http.get(this.host + '/', { params }).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
+    return this.http.get<{ data: Challenge[] }>(this.host + '/', { params }).pipe(map((response: { data: Challenge[] }) => response.data), catchError((err: Error) => { throw err }))
   }
 
   repeatNotification (challengeName: string) {
@@ -38,15 +38,15 @@ export class ChallengeService {
     return this.http.get(this.hostServer + '/rest/continue-code-fixIt').pipe(map((response: any) => response.continueCode), catchError((err) => { throw err }))
   }
 
-  restoreProgress (continueCode: string) {
-    return this.http.put(this.hostServer + '/rest/continue-code/apply/' + continueCode, {}).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
+  restoreProgress (continueCode: string): Observable<Challenge[]> {
+    return this.http.put<{ data: Challenge[] }>(this.hostServer + '/rest/continue-code/apply/' + continueCode, {}).pipe(map((response: { data: Challenge[] }) => response.data), catchError((err: Error) => { throw err }))
   }
 
-  restoreProgressFindIt (continueCode: string) {
-    return this.http.put(this.hostServer + '/rest/continue-code-findIt/apply/' + continueCode, {}).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
+  restoreProgressFindIt (continueCode: string): Observable<Challenge[]> {
+    return this.http.put<{ data: Challenge[] }>(this.hostServer + '/rest/continue-code-findIt/apply/' + continueCode, {}).pipe(map((response: { data: Challenge[] }) => response.data), catchError((err: Error) => { throw err }))
   }
 
-  restoreProgressFixIt (continueCode: string) {
-    return this.http.put(this.hostServer + '/rest/continue-code-fixIt/apply/' + continueCode, {}).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
+  restoreProgressFixIt (continueCode: string): Observable<Challenge[]> {
+    return this.http.put<{ data: Challenge[] }>(this.hostServer + '/rest/continue-code-fixIt/apply/' + continueCode, {}).pipe(map((response: { data: Challenge[] }) => response.data), catchError((err: Error) => { throw err }))
   }
 }
