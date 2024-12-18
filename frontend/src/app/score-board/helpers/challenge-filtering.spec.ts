@@ -2,6 +2,40 @@ import { type EnrichedChallenge } from '../types/EnrichedChallenge'
 import { DEFAULT_FILTER_SETTING } from '../filter-settings/FilterSetting'
 import { filterChallenges } from './challenge-filtering'
 
+const SHARED_CHALLENGE_2 = {
+  category: 'foobar',
+  description: 'lorem ipsum',
+  originalDescription: 'lorem ipsum',
+  difficulty: 3,
+  hasCodingChallenge: true,
+  id: 2,
+  key: 'challenge-2',
+  mitigationUrl: 'https://owasp.example.com',
+  name: 'challenge two',
+  solved: true,
+  codingChallengeStatus: 2,
+  tagList: ['easy'],
+  disabledEnv: null,
+  tutorialOrder: 2
+} as EnrichedChallenge
+
+const SHARED_CHALLENGE_3 = {
+  category: 'barfoo',
+  description: 'lorem ipsum',
+  originalDescription: 'lorem ipsum',
+  difficulty: 6,
+  hasCodingChallenge: true,
+  id: 3,
+  key: 'challenge-3',
+  mitigationUrl: 'https://owasp.example.com',
+  name: 'challenge three',
+  solved: true,
+  codingChallengeStatus: 1,
+  tagList: ['hard'],
+  disabledEnv: 'docker',
+  tutorialOrder: null
+} as EnrichedChallenge
+
 const CHALLENGE_1 = {
   category: 'foobar',
   description: 'lorem ipsum',
@@ -19,39 +53,8 @@ const CHALLENGE_1 = {
   tutorialOrder: 1
 } as EnrichedChallenge
 
-const CHALLENGE_2 = {
-  category: 'foobar',
-  description: 'lorem ipsum',
-  originalDescription: 'lorem ipsum',
-  difficulty: 3,
-  hasCodingChallenge: true,
-  id: 2,
-  key: 'challenge-2',
-  mitigationUrl: 'https://owasp.example.com',
-  name: 'challenge two',
-  solved: true,
-  codingChallengeStatus: 2,
-  tagList: ['easy'],
-  disabledEnv: null,
-  tutorialOrder: 2
-} as EnrichedChallenge
-
-const CHALLENGE_3 = {
-  category: 'barfoo',
-  description: 'lorem ipsum',
-  originalDescription: 'lorem ipsum',
-  difficulty: 6,
-  hasCodingChallenge: true,
-  id: 3,
-  key: 'challenge-3',
-  mitigationUrl: 'https://owasp.example.com',
-  name: 'challenge three',
-  solved: true,
-  codingChallengeStatus: 1,
-  tagList: ['hard'],
-  disabledEnv: 'docker',
-  tutorialOrder: null
-} as EnrichedChallenge
+const CHALLENGE_2 = SHARED_CHALLENGE_2;
+const CHALLENGE_3 = SHARED_CHALLENGE_3;
 
 describe('filterChallenges', () => {
   it('should filter empty list', () => {
