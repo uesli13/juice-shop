@@ -10,15 +10,27 @@ import { Joi } from 'frisby'
 
 const URL = 'http://localhost:3000'
 
+// Utility function for POST requests to avoid duplication
+const postFixRequest = (key: string, selectedFix: number) => {
+  return frisby.post(URL + '/snippets/fixes', {
+    body: { key, selectedFix }
+  })
+}
+
+// Utility function for GET requests to avoid duplication
+const getFixRequest = (key: string) => {
+  return frisby.get(URL + '/snippets/fixes/' + key)
+}
+
 describe('/snippets/fixes/:key', () => {
   it('GET fixes for unknown challenge key throws error', () => {
-    return frisby.get(URL + '/snippets/fixes/doesNotExistChallenge')
+    return getFixRequest('doesNotExistChallenge')
       .expect('status', 404)
       .expect('json', 'error', 'No fixes found for the snippet!')
   })
 
   it('GET fixes for existing challenge key', () => {
-    return frisby.get(URL + '/snippets/fixes/resetPasswordBenderChallenge')
+    return getFixRequest('resetPasswordBenderChallenge')
       .expect('status', 200)
       .expect('jsonTypes', {
         fixes: Joi.array().items(Joi.string())
@@ -50,23 +62,13 @@ describe('/snippets/fixes', () => {
   })
 
   it('POST fix for non-existing challenge key throws error', () => {
-    return frisby.post(URL + '/snippets/fixes', {
-      body: {
-        key: 'doesNotExistChallenge',
-        selectedFix: 1
-      }
-    })
+    return postFixRequest('doesNotExistChallenge', 1)
       .expect('status', 404)
       .expect('json', 'error', 'No fixes found for the snippet!')
   })
 
   it('POST wrong fix for existing challenge key gives negative verdict and explanation', () => {
-    return frisby.post(URL + '/snippets/fixes', {
-      body: {
-        key: 'resetPasswordBenderChallenge',
-        selectedFix: 0
-      }
-    })
+    return postFixRequest('resetPasswordBenderChallenge', 0)
       .expect('status', 200)
       .expect('json', {
         verdict: false,
@@ -75,12 +77,7 @@ describe('/snippets/fixes', () => {
   })
 
   it('POST non-existing fix for existing challenge key gives negative verdict and no explanation', () => {
-    return frisby.post(URL + '/snippets/fixes', {
-      body: {
-        key: 'resetPasswordBenderChallenge',
-        selectedFix: 42
-      }
-    })
+    return postFixRequest('resetPasswordBenderChallenge', 42)
       .expect('status', 200)
       .expect('json', {
         verdict: false
@@ -98,12 +95,7 @@ describe('/snippets/fixes', () => {
       })
     })
 
-    await frisby.post(URL + '/snippets/fixes', {
-      body: {
-        key: 'resetPasswordBenderChallenge',
-        selectedFix: 1
-      }
-    })
+    await postFixRequest('resetPasswordBenderChallenge', 1)
       .expect('status', 200)
       .expect('json', {
         verdict: true,
