@@ -1,4 +1,5 @@
-/* 
+@@ -1,454 +1,394 @@
+/*
  * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
@@ -10,154 +11,401 @@ import validateConfig from '../../lib/startup/validateConfig'
 const expect = chai.expect
 chai.use(sinonChai)
 
-const {
-  checkUnambiguousMandatorySpecialProducts,
-  checkUniqueSpecialOnProducts,
-  checkYamlSchema,
-  checkMinimumRequiredNumberOfProducts,
-  checkUnambiguousMandatorySpecialMemories,
-  checkMinimumRequiredNumberOfMemories,
-  //checkUniqueSpecialOnMemories,
-  //checkSpecialMemoriesHaveNoUserAssociated,
-  checkNecessaryExtraKeysOnSpecialProducts
-} = require('../../lib/startup/validateConfig')
+const { checkUnambiguousMandatorySpecialProducts, checkUniqueSpecialOnProducts, checkYamlSchema, checkMinimumRequiredNumberOfProducts, checkUnambiguousMandatorySpecialMemories, checkMinimumRequiredNumberOfMemories, checkUniqueSpecialOnMemories, checkSpecialMemoriesHaveNoUserAssociated, checkNecessaryExtraKeysOnSpecialProducts } = require('../../lib/startup/validateConfig')
 
-// Helper Function: Reusable product tests
-function testProducts(
-  testFunction: (products: any[]) => boolean,
-  validConfig: any[],
-  invalidConfig: any[],
-  errorCondition: string
-) {
-  it('should accept a valid config', () => {
-    expect(testFunction(validConfig)).to.equal(true)
-  })
 
-  it(`should fail if ${errorCondition}`, () => {
-    expect(testFunction(invalidConfig)).to.equal(false)
-  })
+async function create4Products() {
+  const products = [
+    {
+      name: 'Apple Juice',
+      useForChristmasSpecialChallenge: true
+    },
+    {
+      name: 'Orange Juice',
+      urlForProductTamperingChallenge: 'foobar'
+    },
+    {
+      name: 'Melon Juice',
+      fileForRetrieveBlueprintChallenge: 'foobar',
+      exifForBlueprintChallenge: ['OpenSCAD']
+    },
+    {
+      name: 'Rippertuer Special Juice',
+      keywordsForPastebinDataLeakChallenge: ['bla', 'blubb']
+    }
+  ]
+  return products
 }
 
 describe('configValidation', () => {
   describe('checkUnambiguousMandatorySpecialProducts', () => {
-    const validProducts = [
-      { name: 'Apple Juice', useForChristmasSpecialChallenge: true },
-      { name: 'Orange Juice', urlForProductTamperingChallenge: 'foobar' },
-      { name: 'Melon Juice', fileForRetrieveBlueprintChallenge: 'foobar', exifForBlueprintChallenge: ['OpenSCAD'] },
-      { name: 'Rippertuer Special Juice', keywordsForPastebinDataLeakChallenge: ['bla', 'blubb'] }
-    ]
+    it('should accept a valid config', () => {
+      /*const products = [
+        {
+          name: 'Apple Juice',
+          useForChristmasSpecialChallenge: true
+        },
+        {
+          name: 'Orange Juice',
+          urlForProductTamperingChallenge: 'foobar'
+        },
+        {
+          name: 'Melon Juice',
+          fileForRetrieveBlueprintChallenge: 'foobar',
+          exifForBlueprintChallenge: ['OpenSCAD']
+        },
+        {
+          name: 'Rippertuer Special Juice',
+          keywordsForPastebinDataLeakChallenge: ['bla', 'blubb']
+        }
+      ]*/
+      expect(checkUnambiguousMandatorySpecialProducts(create4Products())).to.equal(true)
+    })
 
-    const invalidProducts = [
-      { name: 'Apple Juice', useForChristmasSpecialChallenge: true },
-      { name: 'Melon Bike', useForChristmasSpecialChallenge: true }
-    ]
+    it('should fail if multiple products are configured for the same challenge', () => {
+      const products = [
+        {
+          name: 'Apple Juice',
+          useForChristmasSpecialChallenge: true
+        },
+        {
+          name: 'Melon Bike',
+          useForChristmasSpecialChallenge: true
+        },
+        {
+          name: 'Orange Juice',
+          urlForProductTamperingChallenge: 'foobar'
+        },
+        {
+          name: 'Melon Juice',
+          fileForRetrieveBlueprintChallenge: 'foobar',
+          exifForBlueprintChallenge: ['OpenSCAD']
+        }
+      ]
 
-    testProducts(
-      checkUnambiguousMandatorySpecialProducts,
-      validProducts,
-      invalidProducts,
-      'multiple products are configured for the same challenge'
-    )
+      expect(checkUnambiguousMandatorySpecialProducts(products)).to.equal(false)
+    })
+
+    it('should fail if a required challenge product is missing', () => {
+      const products = [
+        {
+          name: 'Apple Juice',
+          useForChristmasSpecialChallenge: true
+        },
+        {
+          name: 'Orange Juice',
+          urlForProductTamperingChallenge: 'foobar'
+        }
+      ]
+
+      expect(checkUnambiguousMandatorySpecialProducts(products)).to.equal(false)
+    })
   })
 
   describe('checkNecessaryExtraKeysOnSpecialProducts', () => {
-    const validProducts = [
-      { name: 'Apple Juice', useForChristmasSpecialChallenge: true },
-      { name: 'Orange Juice', urlForProductTamperingChallenge: 'foobar' },
-      { name: 'Melon Juice', fileForRetrieveBlueprintChallenge: 'foobar', exifForBlueprintChallenge: ['OpenSCAD'] },
-      { name: 'Rippertuer Special Juice', keywordsForPastebinDataLeakChallenge: ['bla', 'blubb'] }
-    ]
+    it('should accept a valid config', () => {
+      /*const products = [
+        {
+          name: 'Apple Juice',
+          useForChristmasSpecialChallenge: true
+        },
+        {
+          name: 'Orange Juice',
+          urlForProductTamperingChallenge: 'foobar'
+        },
+        {
+          name: 'Melon Juice',
+          fileForRetrieveBlueprintChallenge: 'foobar',
+          exifForBlueprintChallenge: ['OpenSCAD']
+        },
+        {
+          name: 'Rippertuer Special Juice',
+          keywordsForPastebinDataLeakChallenge: ['bla', 'blubb']
+        }
+      ]*/
+      expect(checkNecessaryExtraKeysOnSpecialProducts(create4Products())).to.equal(true)
+    })
 
-    const invalidProducts = [
-      { name: 'Apple Juice', useForChristmasSpecialChallenge: true },
-      { name: 'Orange Juice', urlForProductTamperingChallenge: 'foobar' },
-      { name: 'Melon Juice', fileForRetrieveBlueprintChallenge: 'foobar' }
-    ]
+    it('should fail if product has no exifForBlueprintChallenge', () => {
+      const products = [
+        {
+          name: 'Apple Juice',
+          useForChristmasSpecialChallenge: true
+        },
+        {
+          name: 'Orange Juice',
+          urlForProductTamperingChallenge: 'foobar'
+        },
+        {
+          name: 'Melon Juice',
+          fileForRetrieveBlueprintChallenge: 'foobar'
+        },
+        {
+          name: 'Rippertuer Special Juice',
+          keywordsForPastebinDataLeakChallenge: ['bla', 'blubb']
+        }
+      ]
 
-    testProducts(
-      checkNecessaryExtraKeysOnSpecialProducts,
-      validProducts,
-      invalidProducts,
-      'product has no exifForBlueprintChallenge'
-    )
+      expect(checkNecessaryExtraKeysOnSpecialProducts(products)).to.equal(false)
+    })
   })
 
   describe('checkUniqueSpecialOnProducts', () => {
-    const validProducts = [
-      { name: 'Apple Juice', useForChristmasSpecialChallenge: true },
-      { name: 'Orange Juice', urlForProductTamperingChallenge: 'foobar' },
-      { name: 'Melon Juice', fileForRetrieveBlueprintChallenge: 'foobar', exifForBlueprintChallenge: ['OpenSCAD'] },
-      { name: 'Rippertuer Special Juice', keywordsForPastebinDataLeakChallenge: ['bla', 'blubb'] }
-    ]
+    it('should accept a valid config', () => {
+      /*const products = [
+        {
+          name: 'Apple Juice',
+          useForChristmasSpecialChallenge: true
+        },
+        {
+          name: 'Orange Juice',
+          urlForProductTamperingChallenge: 'foobar'
+        },
+        {
+          name: 'Melon Juice',
+          fileForRetrieveBlueprintChallenge: 'foobar',
+          exifForBlueprintChallenge: ['OpenSCAD']
+        },
+        {
+          name: 'Rippertuer Special Juice',
+          keywordsForPastebinDataLeakChallenge: ['bla', 'blubb']
+        }
+      ]*/
+      expect(checkUniqueSpecialOnProducts(create4Products())).to.equal(true)
+    })
 
-    const invalidProducts = [
-      { name: 'Apple Juice', useForChristmasSpecialChallenge: true, urlForProductTamperingChallenge: 'foobar' }
-    ]
+    it('should fail if a product is configured for multiple challenges', () => {
+      const products = [
+        {
+          name: 'Apple Juice',
+          useForChristmasSpecialChallenge: true,
+          urlForProductTamperingChallenge: 'foobar'
+        }
+      ]
 
-    testProducts(
-      checkUniqueSpecialOnProducts,
-      validProducts,
-      invalidProducts,
-      'a product is configured for multiple challenges'
-    )
+      expect(checkUniqueSpecialOnProducts(products)).to.equal(false)
+    })
   })
 
   describe('checkMinimumRequiredNumberOfProducts', () => {
-    const validProducts = [
-      { name: 'Apple Juice' },
-      { name: 'Orange Juice' },
-      { name: 'Melon Juice' },
-      { name: 'Rippertuer Special Juice' }
-    ]
+    it('should accept a valid config', () => {
+      const products = [
+        {
+          name: 'Apple Juice'
+        },
+        {
+          name: 'Orange Juice'
+        },
+        {
+          name: 'Melon Juice'
+        },
+        {
+          name: 'Rippertuer Special Juice'
+        }
+      ]
 
-    const invalidProducts = [
-      { name: 'Apple Juice' },
-      { name: 'Orange Juice' },
-      { name: 'Melon Juice' }
-    ]
+      expect(checkMinimumRequiredNumberOfProducts(products)).to.equal(true)
+    })
 
-    testProducts(
-      checkMinimumRequiredNumberOfProducts,
-      validProducts,
-      invalidProducts,
-      'less than 4 products are configured'
-    )
+    it('should fail if less than 4 products are configured', () => {
+      const products = [
+        {
+          name: 'Apple Juice'
+        },
+        {
+          name: 'Orange Juice'
+        },
+        {
+          name: 'Melon Juice'
+        }
+      ]
+
+      expect(checkMinimumRequiredNumberOfProducts(products)).to.equal(false)
+    })
   })
 
   describe('checkUnambiguousMandatorySpecialMemories', () => {
-    const validMemories = [
-      { image: 'bla.png', geoStalkingMetaSecurityQuestion: 42, geoStalkingMetaSecurityAnswer: 'foobar' },
-      { image: 'blubb.png', geoStalkingVisualSecurityQuestion: 43, geoStalkingVisualSecurityAnswer: 'barfoo' }
-    ]
+    it('should accept a valid config', () => {
+      const memories = [
+        {
+          image: 'bla.png',
+          geoStalkingMetaSecurityQuestion: 42,
+          geoStalkingMetaSecurityAnswer: 'foobar'
+        },
+        {
+          image: 'blubb.png',
+          geoStalkingVisualSecurityQuestion: 43,
+          geoStalkingVisualSecurityAnswer: 'barfoo'
+        }
+      ]
 
-    const invalidMemories = [
-      { image: 'bla.png', geoStalkingMetaSecurityQuestion: 42, geoStalkingMetaSecurityAnswer: 'foobar' },
-      { image: 'lalala.png', geoStalkingMetaSecurityQuestion: 46, geoStalkingMetaSecurityAnswer: 'foobarfoo' }
-    ]
+      expect(checkUnambiguousMandatorySpecialMemories(memories)).to.equal(true)
+    })
 
-    testProducts(
-      checkUnambiguousMandatorySpecialMemories,
-      validMemories,
-      invalidMemories,
-      'multiple memories are configured for the same challenge'
-    )
+    it('should fail if multiple memories are configured for the same challenge', () => {
+      const memories = [
+        {
+          image: 'bla.png',
+          geoStalkingMetaSecurityQuestion: 42,
+          geoStalkingMetaSecurityAnswer: 'foobar'
+        },
+        {
+          image: 'blubb.png',
+          geoStalkingVisualSecurityQuestion: 43,
+          geoStalkingVisualSecurityAnswer: 'barfoo'
+        },
+        {
+          image: 'lalala.png',
+          geoStalkingMetaSecurityQuestion: 46,
+          geoStalkingMetaSecurityAnswer: 'foobarfoo'
+        }
+      ]
+
+      expect(checkUnambiguousMandatorySpecialMemories(memories)).to.equal(false)
+    })
+
+    it('should fail if a required challenge memory is missing', () => {
+      const memories = [
+        {
+          image: 'bla.png',
+          geoStalkingMetaSecurityQuestion: 42,
+          geoStalkingMetaSecurityAnswer: 'foobar'
+        }
+      ]
+
+      expect(checkUnambiguousMandatorySpecialMemories(memories)).to.equal(false)
+    })
+
+    it('should fail if memories have mixed up the required challenge keys', () => {
+      const memories = [
+        {
+          image: 'bla.png',
+          geoStalkingMetaSecurityQuestion: 42,
+          geoStalkingVisualSecurityAnswer: 'foobar'
+        },
+        {
+          image: 'blubb.png',
+          geoStalkingVisualSecurityQuestion: 43,
+          geoStalkingMetaSecurityAnswer: 'barfoo'
+        }
+      ]
+
+      expect(checkUnambiguousMandatorySpecialMemories(memories)).to.equal(false)
+    })
   })
 
-  // Repeat this pattern for other memory checks
+  describe('checkThatThereIsOnlyOneMemoryPerSpecial', () => {
+    it('should accept a valid config', () => {
+      const memories = [
+        {
+          image: 'bla.png',
+          geoStalkingMetaSecurityQuestion: 42,
+          geoStalkingMetaSecurityAnswer: 'foobar'
+        },
+        {
+          image: 'blubb.png',
+          geoStalkingVisualSecurityQuestion: 43,
+          geoStalkingVisualSecurityAnswer: 'barfoo'
+        }
+      ]
+
+      expect(checkUniqueSpecialOnMemories(memories)).to.equal(true)
+    })
+
+    it('should fail if a memory is configured for multiple challenges', () => {
+      const memories = [
+        {
+          image: 'bla.png',
+          caption: 'Bla',
+          geoStalkingMetaSecurityQuestion: 42,
+          geoStalkingMetaSecurityAnswer: 'foobar',
+          geoStalkingVisualSecurityQuestion: 43,
+          geoStalkingVisualSecurityAnswer: 'barfoo'
+        }
+      ]
+
+      expect(checkUniqueSpecialOnMemories(memories)).to.equal(false)
+    })
+  })
+
+  describe('checkSpecialMemoriesHaveNoUserAssociated', () => {
+    it('should accept a valid config', () => {
+      const memories = [
+        {
+          image: 'bla.png',
+          geoStalkingMetaSecurityQuestion: 42,
+          geoStalkingMetaSecurityAnswer: 'foobar'
+        },
+        {
+          image: 'blubb.png',
+          geoStalkingVisualSecurityQuestion: 43,
+          geoStalkingVisualSecurityAnswer: 'barfoo'
+        }
+      ]
+
+      expect(checkSpecialMemoriesHaveNoUserAssociated(memories)).to.equal(true)
+    })
+
+    it('should accept a config where the default users are associated', () => {
+      const memories = [
+        {
+          user: 'john',
+          image: 'bla.png',
+          geoStalkingMetaSecurityQuestion: 42,
+          geoStalkingMetaSecurityAnswer: 'foobar'
+        },
+        {
+          user: 'emma',
+          image: 'blubb.png',
+          geoStalkingVisualSecurityQuestion: 43,
+          geoStalkingVisualSecurityAnswer: 'barfoo'
+        }
+      ]
+
+      expect(checkSpecialMemoriesHaveNoUserAssociated(memories)).to.equal(true)
+    })
+
+    it('should fail if a memory is linked to another user', () => {
+      const memories = [
+        {
+          user: 'admin',
+          image: 'bla.png',
+          caption: 'Bla',
+          geoStalkingMetaSecurityQuestion: 42,
+          geoStalkingMetaSecurityAnswer: 'foobar'
+        }
+      ]
+
+      expect(checkSpecialMemoriesHaveNoUserAssociated(memories)).to.equal(false)
+    })
+  })
+
   describe('checkMinimumRequiredNumberOfMemories', () => {
-    const validMemories = [
-      { image: 'bla.png', user: 'admin' },
-      { image: 'blubb.png', user: 'bjoern' }
-    ]
+    it('should accept a valid config', () => {
+      const memories = [
+        {
+          image: 'bla.png',
+          user: 'admin'
+        },
+        {
+          image: 'blubb.png',
+          user: 'bjoern'
+        }
+      ]
 
-    const invalidMemories = [{ image: 'bla.png', user: 'admin' }]
+      expect(checkMinimumRequiredNumberOfMemories(memories)).to.equal(true)
+    })
 
-    testProducts(
-      checkMinimumRequiredNumberOfMemories,
-      validMemories,
-      invalidMemories,
-      'less than 2 memories are configured'
-    )
+    it('should fail if less than 2 memories are configured', () => {
+      const memories = [
+        {
+          image: 'bla.png',
+          user: 'admin'
+        }
+      ]
+
+      expect(checkMinimumRequiredNumberOfMemories(memories)).to.equal(false)
+    })
   })
 
   it(`should accept the active config from config/${process.env.NODE_ENV}.yml`, async () => {
@@ -170,8 +418,16 @@ describe('configValidation', () => {
 
   it('should accept a config with valid schema', () => {
     const config = {
-      application: { domain: 'juice-b.ox', name: 'OWASP Juice Box', welcomeBanner: { showOnFirstStart: false } },
-      hackingInstructor: { avatarImage: 'juicyEvilWasp.png' }
+      application: {
+        domain: 'juice-b.ox',
+        name: 'OWASP Juice Box',
+        welcomeBanner: {
+          showOnFirstStart: false
+        }
+      },
+      hackingInstructor: {
+        avatarImage: 'juicyEvilWasp.png'
+      }
     }
 
     expect(checkYamlSchema(config)).to.equal(true)
@@ -179,8 +435,16 @@ describe('configValidation', () => {
 
   it('should fail for a config with schema errors', () => {
     const config = {
-      application: { domain: 42, id: 'OWASP Juice Box', welcomeBanner: { showOnFirstStart: 'yes' } },
-      hackingInstructor: { avatarImage: true }
+      application: {
+        domain: 42,
+        id: 'OWASP Juice Box',
+        welcomeBanner: {
+          showOnFirstStart: 'yes'
+        }
+      },
+      hackingInstructor: {
+        avatarImage: true
+      }
     }
 
     expect(checkYamlSchema(config)).to.equal(false)
